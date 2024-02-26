@@ -19,7 +19,7 @@ const listInfo = defineProps({
             <div>
                 {{ listInfo.title }}
             </div>
-            <div class="text-slate-400">
+            <div class="text-slate-400  text-xs">
                 <p>{{ listInfo.count }}首-{{ listInfo.times }}次播放</p>
             </div>
         </div>

@@ -86,6 +86,16 @@ const clear = async () => {
 //清理绑定防抖
 const debounceClear = debounce(clear, 1000)
 
+//打开定时关闭组件
+const openTiming = ()=>{
+    console.log("打开定时关闭组件");
+}
+
+//退出登录
+const logout = ()=>{
+    console.log("退出登录");
+}
+
 onMounted(() => {
     if (localStorage.theme === 'dark') {
         darkMode.value = true
@@ -100,14 +110,14 @@ onMounted(() => {
         class="animate-[side_0.4s] w-10/12 h-screen fixed z-50 top-0 bg-gray-100 dark:bg-black p-2 dark:text-white">
         <div class="flex items-center flex-col pb-2">
             <div>
-                <img class="w-8 h-8 rounded-full"
+                <img class="w-14 h-14 rounded-full"
                     src="https://images.unsplash.com/photo-1554629947-334ff61d85dc?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&h=666&q=80"
                     alt="">
             </div>
-            <div>Heart的音乐平台</div>
+            <div>登录</div>
         </div>
         <div class="bg-white dark:bg-gray-800 rounded-lg px-3 py-2">
-            <div class="flex items-center py-1">
+            <div class="flex items-center pb-2">
                 <p class="flex-grow">深色模式</p>
                 <div>
                     <label class="swap swap-rotate">
@@ -127,11 +137,10 @@ onMounted(() => {
                                 d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z" />
                         </svg>
 
-
                     </label>
                 </div>
             </div>
-            <div class="flex items-center py-1 border-t-[0.1px] dark:border-gray-500">
+            <div class="flex items-center py-2 border-t-[0.1px] dark:border-gray-500">
                 <p class="flex-grow">清理缓存</p>
                 <div @click="debounceClear()" ref="rocket">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -141,8 +150,20 @@ onMounted(() => {
                     </svg>
                 </div>
             </div>
+            <div class="flex items-center pt-2 border-t-[0.1px] dark:border-gray-500">
+                <p class="flex-grow">定时关闭</p>
+                <div @click="openTiming()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                    </svg>
+                </div>
+            </div>
         </div>
-        <div class="absolute top-[30%]">
+        <div @click="logout()" v-if="true" class="text-red-600 w-full text-center bg-white dark:bg-gray-800 rounded-lg px-3 py-2 mt-5 relative z-10">
+            退出登录
+        </div>
+        <div class="absolute top-[30%] z-0">
             <img src="../../public/img/aya-1.0.0.png" alt="aya" class="w-[80%] m-auto">
         </div>
     </div>

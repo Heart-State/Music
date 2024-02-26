@@ -18,7 +18,7 @@
             <img src="../../public//img//sumireko-1.0.0.png" alt="sumireko" class="w-[50%] absolute top-[-75px] right-0 block">
             <div class="text-xs text-white">
                 <p class="text-sm">
-                    <span class="bg-gradient-to-r from-sky-500 to-indigo-500 bg-[length:0_1px] bg-no-repeat bg-bottom bg-left-bottom transition-all duration-1000 hover:bg-[length:100%_1px]">我期待的不是雪</span>
+                    <span class="bg-gradient-to-r from-sky-500 to-indigo-500 bg-[length:0_1px] bg-no-repeat bg-left-bottom transition-all duration-1000 hover:bg-[length:100%_1px]">我期待的不是雪</span>
                 </p>
                 <p>而是有你的冬天</p>
                 <p>而是有你的冬天</p>
