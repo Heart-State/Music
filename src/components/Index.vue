@@ -6,6 +6,7 @@ import MusicLibrary from './MusicLibrary.vue'
 import Side from './Side.vue'
 import Message from '../assets/js/message'
 import PlayListCard from './PlayListCard.vue'
+import Timing from './Timing.vue'
 import { useRouter } from 'vue-router'
 
 //动态组件绑定值
@@ -31,10 +32,15 @@ const openSide = () => {
 }
 
 //组件退出
-const exit = () => {
-    compFlag.value = false
-    currentView.value = null
-    document.querySelector('body').classList.remove("overflow-hidden")
+const exit = (msg) => {
+    console.log(msg);
+    if (msg == "openTiming") {
+        currentView.value = Timing
+    }else{
+        compFlag.value = false
+        currentView.value = null
+        document.querySelector('body').classList.remove("overflow-hidden")
+    }
 }
 
 //打开歌单
@@ -53,13 +59,13 @@ const openList = (e) => {
 //新增歌单
 const openAddList = (e) => {
     //动画
-    openAnimate(e.currentTarget,()=>{
-        
+    openAnimate(e.currentTarget, () => {
+
     })
 }
 
 //打开歌单动画
-const openAnimate = (e,fn) => {
+const openAnimate = (e, fn) => {
     let animation = e.animate(
         [
             { transform: 'scale(1)' },

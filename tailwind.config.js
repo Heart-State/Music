@@ -12,6 +12,14 @@ export default {
           "100%": {
             left: "0"
           }
+        }, 
+        "timing": {
+          "0%": {
+            bottom: "-40vh"
+          },
+          "100%": {
+            bottom: "0"
+          }
         },
         "mask": {
           "0%": {

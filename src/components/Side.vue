@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import Message from '../assets/js/message'
 import debounce from '../assets/js/debounce';
 
@@ -10,6 +10,7 @@ const darkMode = ref(false)
 //绑定虚拟Dom
 const main = ref()
 const rocket = ref()
+const mask = ref()
 
 
 //深色模式切换
@@ -25,7 +26,7 @@ const SwitchingModes = () => {
 }
 
 //退出组件
-const exit = (e) => {
+const exit = (msg) => {
     // main.value.style.animationPlayState = 'paused'
     let computedStyle = window.getComputedStyle(main.value);
     let currentLeft = parseFloat(computedStyle.getPropertyValue('left'));
@@ -43,9 +44,9 @@ const exit = (e) => {
         }
     );
     main.value.classList.remove("animate-[side_0.4s]")
-    let maskStyle = window.getComputedStyle(e.target);
+    let maskStyle = window.getComputedStyle(mask.value);
     let currentOpacity = parseFloat(maskStyle.getPropertyValue('opacity'));
-    e.target.animate(
+    mask.value.animate(
         [
             { opacity: currentOpacity },
             { opacity: 0 }
@@ -56,11 +57,11 @@ const exit = (e) => {
             fill: 'forwards' // 动画结束后保持最后一个状态
         }
     );
-    e.target.classList.remove("animate-[mask_0.4s]")
+    mask.value.classList.remove("animate-[mask_0.4s]")
     // 等待动画结束
     animation.finished.then(() => {
         // 动画结束后执行的操作
-        emit('exit')
+        emit('exit',msg=="openTiming"?msg:null)
     });
 }
 
@@ -89,6 +90,7 @@ const debounceClear = debounce(clear, 1000)
 //打开定时关闭组件
 const openTiming = ()=>{
     console.log("打开定时关闭组件");
+    exit("openTiming")
 }
 
 //退出登录
@@ -116,7 +118,7 @@ onMounted(() => {
             </div>
             <div>登录</div>
         </div>
-        <div class="bg-white dark:bg-gray-800 rounded-lg px-3 py-2">
+        <div class="bg-white dark:bg-gray-800 rounded-lg px-3 py-2 relative z-10">
             <div class="flex items-center pb-2">
                 <p class="flex-grow">深色模式</p>
                 <div>
@@ -167,7 +169,7 @@ onMounted(() => {
             <img src="../../public/img/aya-1.0.0.png" alt="aya" class="w-[80%] m-auto">
         </div>
     </div>
-    <div @click="exit" class="animate-[mask_0.4s] opacity-60 bg-slate-950 w-screen h-screen fixed top-0 z-10"></div>
+    <div @click="exit" ref="mask" class="animate-[mask_0.4s] opacity-60 bg-slate-950 w-screen h-screen fixed top-0 z-10"></div>
 </template>
 
 <style scoped></style>

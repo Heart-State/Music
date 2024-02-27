@@ -1,27 +1,25 @@
 <script setup>
-import {onMounted, ref} from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
+import { useEventListener } from '../assets/js/event'
 
 const header = ref()
 const cover = ref()
 
 
-onMounted(()=>{
-    document.addEventListener("scroll",(e)=>{
-        let scrollTop = document.documentElement.scrollTop
-        let range = cover.value.offsetHeight
-        console.log(scrollTop);
-        console.log(range);
-        header.value.style.backgroundColor = 'rgba(146, 164, 186,'+scrollTop/range+')'
-    })
+useEventListener(document, "scroll", (e) => {
+    let scrollTop = document.documentElement.scrollTop
+    let range = cover.value.offsetHeight
+    header.value.style.backgroundColor = 'rgba(146, 164, 186,' + scrollTop / range + ')'
 })
 </script>
 
 <template>
-    <div class="fixed z-0 w-screen h-screen bg-slate-400 dark:backdrop-brightness-75">
+    <div class="fixed z-0 w-screen h-screen bg-slate-400 dark:brightness-75">
 
     </div>
     <div class="dark:text-white flex flex-col  min-h-screen z-10">
-        <div ref="header" class="header p-1 flex justify-between sticky top-0 z-50 bg-slate-400 dark:backdrop-brightness-75">
+        <div ref="header"
+            class="header p-1 flex justify-between sticky top-0 z-50 bg-slate-400 dark:brightness-75">
             <div class="flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="w-10 h-10 p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800"
@@ -79,7 +77,8 @@ onMounted(()=>{
                     <div class="flex-1 pl-3">
                         <h6>小半</h6>
                         <p class="text-xs flex">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-indigo-500" v-if="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                                class="w-4 h-4 text-indigo-500" v-if="true">
                                 <path
                                     d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
                             </svg>
