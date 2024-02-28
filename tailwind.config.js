@@ -15,7 +15,7 @@ export default {
         }, 
         "timing": {
           "0%": {
-            bottom: "-40vh"
+            bottom: "-45vh"
           },
           "100%": {
             bottom: "0"

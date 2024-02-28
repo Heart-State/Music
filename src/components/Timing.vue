@@ -16,12 +16,13 @@ const selectedTime = ref(localStorage.getItem("selectedTime"))
 const exit = () => {
     let computedStyle = window.getComputedStyle(main.value);
     let currentBottom = parseFloat(computedStyle.getPropertyValue('bottom'));
-
+    let height = parseFloat(computedStyle.getPropertyValue('height'));
+    console.log(height);
     // 创建动画效果
     let animation = main.value.animate(
         [
             { bottom: currentBottom + 'px' },
-            { bottom: '-40vh' }
+            { bottom: -height  + 'px' }
         ],
         {
             duration: 400, // 动画持续时间，单位毫秒
