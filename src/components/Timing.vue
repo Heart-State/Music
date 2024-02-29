@@ -9,6 +9,7 @@ const main = ref()
 const mask = ref()
 const hour = ref(null)
 const minute = ref(null)
+const textHeight = ref(null)
 //自定义flag
 const flag = ref(false)
 
@@ -60,10 +61,26 @@ const exit = () => {
 
 
 
+let lastVibrationPosition = 0;
+
 const handleScroll = (event) => {
-    // 震动
-    console.log();
-    navigator.vibrate([50]);
+    const container = event.target;
+    const childHeight = container.querySelector('.snap-center').offsetHeight;
+    const scrollPosition = container.scrollTop;
+    const containerHeight = container.offsetHeight;
+    const centerIndex = Math.floor((scrollPosition + containerHeight / 2) / childHeight);
+
+    const minuteTextPosition = textHeight.value.offsetTop;
+    const txtHeight = textHeight.value.offsetHeight;
+    const centerTextPosition = minuteTextPosition + txtHeight / 2;
+
+    const isCenter = (scrollPosition + containerHeight / 2 >= centerIndex * childHeight) && (scrollPosition + containerHeight / 2 <= (centerIndex + 1) * childHeight);
+    const isTextCenter = (scrollPosition + containerHeight / 2 >= centerTextPosition - textHeight / 2) && (scrollPosition + containerHeight / 2 <= centerTextPosition + textHeight / 2);
+
+    if ((isCenter || isTextCenter) && centerIndex !== lastVibrationPosition) {
+        lastVibrationPosition = centerIndex;
+        navigator.vibrate([30]);
+    }
 };
 
 
@@ -117,9 +134,10 @@ onMounted(() => {
                     <div class="flex items-center pl-3">
                         <div class="overflow-y-scroll no-scrollbar py-16 h-36 snap-y" ref="minute">
                             <div class="py-2 px-1 snap-center" v-for="minute in 60" :key="minute">
-                                {{ (minute - 1) < 10 ? '0' + (minute - 1) : minute - 1 }} </div>
+                                {{ (minute - 1) < 10 ? '0' + (minute - 1) : minute - 1 }} 
+                                </div>
                             </div>
-                            <div class="text-sm text-gray-400">分钟</div>
+                            <div class="text-sm text-gray-400" ref="textHeight">分钟</div>
                         </div>
 
                     </div>
