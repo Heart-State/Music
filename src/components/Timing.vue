@@ -1,6 +1,5 @@
 <script setup>
-import { onMounted, onUnmounted, ref } from 'vue'
-import { useEventListener } from '../assets/js/event'
+import { computed, onMounted, ref } from 'vue'
 
 // 定义派发事件
 const emit = defineEmits(['exit'])
@@ -10,8 +9,19 @@ const mask = ref()
 const hour = ref(null)
 const minute = ref(null)
 const textHeight = ref(null)
-//自定义flag
+//自定义页面flag
 const flag = ref(false)
+const customized = ref(JSON.parse(localStorage.getItem("customized")))
+//记录上一次滚动震动的位置
+let lastVibrationPosition = 0
+//标题(有时间就倒计时)
+const title = computed(() => {
+    if (selectedTime.value > 0) {
+        return selectedTime.value
+    } else {
+        return '选择时间'
+    }
+})
 
 const times = [10, 15, 20, 30, 45, 60]
 const selectedTime = ref(localStorage.getItem("selectedTime"))
@@ -59,30 +69,74 @@ const exit = () => {
 
 }
 
+//设置时间
+const setTiming = (time) => {
+    if (typeof time === 'number') {
+        selectedTime.value = time
+        window.localStorage.setItem("selectedTime", time);
+        window.localStorage.setItem("customized", false);
+        customized.value = false;
+        return
+    }
+    // 获取容器滚动的距离
+    const scrollTop = hour.value.scrollTop;
+    const scrollTop1 = minute.value.scrollTop;
+    // 计算当前被捕捉到的元素是第几个元素
+    const currentIndex = Math.round(scrollTop / hour.value.querySelector('.snap-center').offsetHeight);
+    const currentIndexMinute = Math.round(scrollTop1 / minute.value.querySelector('.snap-center').offsetHeight);
+    // 获取当前被捕捉到的元素
+    const currentElement = hour.value.querySelectorAll('.snap-center')[currentIndex];
+    const currentElement1 = minute.value.querySelectorAll('.snap-center')[currentIndexMinute];
+    //计算总时间分钟结尾
+    time = (parseInt(currentElement.innerText) * 60) + parseInt(currentElement1.innerText)
+    if (time == 0) {
+        window.localStorage.removeItem("selectedTime");
+        window.localStorage.setItem("customized", false);
+        customized.value = false;
+        flag.value = false;
+        selectedTime.value = 0;
+        return;
+    }
+    flag.value = false;
+    selectedTime.value = time;
+    window.localStorage.setItem("selectedTime", time);
+    window.localStorage.setItem("customized", true);
+    customized.value = true;
+}
 
+//取消定时
+const cancel = () => {
+    window.localStorage.removeItem("selectedTime");
+    window.localStorage.setItem("customized", false);
+    customized.value = false;
+    selectedTime.value = 0;
+}
 
-let lastVibrationPosition = 0;
-
+//滚动回调添加震动
 const handleScroll = (event) => {
     const container = event.target;
     const childHeight = container.querySelector('.snap-center').offsetHeight;
     const scrollPosition = container.scrollTop;
     const containerHeight = container.offsetHeight;
+    //计算中心位置
     const centerIndex = Math.floor((scrollPosition + containerHeight / 2) / childHeight);
 
+    //获取 "分钟" 文本元素的位置信息
     const minuteTextPosition = textHeight.value.offsetTop;
     const txtHeight = textHeight.value.offsetHeight;
+    //计算 "分钟" 文本元素的中心位置
     const centerTextPosition = minuteTextPosition + txtHeight / 2;
 
+    //判断中心位置是否满足条件
     const isCenter = (scrollPosition + containerHeight / 2 >= centerIndex * childHeight) && (scrollPosition + containerHeight / 2 <= (centerIndex + 1) * childHeight);
     const isTextCenter = (scrollPosition + containerHeight / 2 >= centerTextPosition - textHeight / 2) && (scrollPosition + containerHeight / 2 <= centerTextPosition + textHeight / 2);
 
     if ((isCenter || isTextCenter) && centerIndex !== lastVibrationPosition) {
+        //更新上次震动位置
         lastVibrationPosition = centerIndex;
         navigator.vibrate([30]);
     }
-};
-
+}
 
 onMounted(() => {
     if (hour.value) {
@@ -102,21 +156,21 @@ onMounted(() => {
             {{ flag ? "自定义关闭" : "定时关闭" }}
         </h5>
         <div v-show="!flag" class="px-3 py-5 m-1 text-center bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-            <h6>选择时间</h6>
+            <h6 :class="title!='选择时间'?'text-indigo-600':''">{{ title }}</h6>
             <div class="py-3 flex justify-around">
                 <div :class="[selectedTime == time ? 'bg-indigo-600 text-white' : '']"
                     class="inline p-1 rounded-full shadow-md active:text-white active:bg-indigo-600" v-for="time in times"
-                    :key="time">
+                    :key="time" @click="setTiming(time)">
                     <p class="w-10 h-10 leading-10">{{ time }}</p>
                 </div>
             </div>
-            <div class="py-2 my-3 shadow-md rounded-lg text-gray-400 active:text-white active:bg-indigo-600 dark:bg-gray-700"
+            <div :class="customized?'text-indigo-600':''" class="py-2 my-3 shadow-md rounded-lg text-gray-400 active:text-white active:bg-indigo-600 dark:bg-gray-700"
                 @click="flag = true">
                 自定义
             </div>
-            <div
+            <div @click="cancel"
                 class="py-2 my-3 shadow-md rounded-lg text-gray-400 active:text-white active:bg-indigo-600 dark:bg-gray-700">
-                取消
+                取消定时
             </div>
         </div>
         <div v-show="flag" class="px-3 py-5 m-1 text-center bg-white dark:bg-gray-800 rounded-lg shadow-sm">
@@ -134,8 +188,7 @@ onMounted(() => {
                     <div class="flex items-center pl-3">
                         <div class="overflow-y-scroll no-scrollbar py-16 h-36 snap-y" ref="minute">
                             <div class="py-2 px-1 snap-center" v-for="minute in 60" :key="minute">
-                                {{ (minute - 1) < 10 ? '0' + (minute - 1) : minute - 1 }} 
-                                </div>
+                                {{ (minute - 1) < 10 ? '0' + (minute - 1) : minute - 1 }} </div>
                             </div>
                             <div class="text-sm text-gray-400" ref="textHeight">分钟</div>
                         </div>
@@ -147,7 +200,7 @@ onMounted(() => {
                             @click="flag = false">
                             取消
                         </div>
-                        <div class="py-2 ml-1 my-3 shadow-md rounded-lg text-white bg-indigo-600 flex-1">
+                        <div @click="setTiming" class="py-2 ml-1 my-3 shadow-md rounded-lg text-white bg-indigo-600 flex-1">
                             确定
                         </div>
                     </div>
