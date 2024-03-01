@@ -89,7 +89,6 @@ const debounceClear = debounce(clear, 1000)
 
 //打开定时关闭组件
 const openTiming = ()=>{
-    console.log("打开定时关闭组件");
     exit("openTiming")
 }
 

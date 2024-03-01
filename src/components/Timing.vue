@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { onActivated, onMounted, ref } from 'vue'
 
 // 定义派发事件
 const emit = defineEmits(['exit'])
@@ -11,27 +11,66 @@ const minute = ref(null)
 const textHeight = ref(null)
 //自定义页面flag
 const flag = ref(false)
+//是否自定义定时
 const customized = ref(JSON.parse(localStorage.getItem("customized")))
 //记录上一次滚动震动的位置
 let lastVibrationPosition = 0
 //标题(有时间就倒计时)
-const title = computed(() => {
-    if (selectedTime.value > 0) {
-        return selectedTime.value
-    } else {
-        return '选择时间'
-    }
-})
+const title = ref("选择时间")
+let timer;
 
 const times = [10, 15, 20, 30, 45, 60]
 const selectedTime = ref(localStorage.getItem("selectedTime"))
+const selected = ref(localStorage.getItem("selected"))
+
+const titleComputed = () => {
+    let m = Math.floor(selectedTime.value / 60);
+    let s = selectedTime.value % 60;
+    if (selectedTime.value > 0 && selectedTime.value != null) {
+        title.value = ((m < 10) ? ('0' + m) : m) + ':' + ((s < 10) ? ('0' + s) : s);
+    } else {
+        //取消定时走这里
+        window.localStorage.removeItem("selectedTime");
+        window.localStorage.removeItem("selected");
+        window.localStorage.setItem("customized", false);
+        customized.value = false
+        clearInterval(timer);
+        title.value = "选择时间";
+        return
+    }
+    clearInterval(timer);
+    timer = setInterval(() => {
+        selectedTime.value -= 1
+        window.localStorage.setItem("selectedTime", selectedTime.value)
+        m = Math.floor(selectedTime.value / 60);
+        s = selectedTime.value % 60;
+        if (selectedTime.value > 0 && selectedTime.value != null) {
+            title.value = ((m < 10) ? ('0' + m) : m) + ':' + ((s < 10) ? ('0' + s) : s);
+        } else {
+            //定时完整结束走这里
+            window.localStorage.removeItem("selectedTime");
+            window.localStorage.removeItem("selected");
+            window.localStorage.setItem("customized", false);
+            customized.value = false
+            clearInterval(timer);
+            title.value = "选择时间";
+            //关闭音乐
+            pause();
+            return;
+        }
+    }, 1000)
+}
+
+//关闭音乐
+const pause = ()=>{
+    console.log("音乐已关闭");
+}
 
 //退出组件
 const exit = () => {
     let computedStyle = window.getComputedStyle(main.value);
     let currentBottom = parseFloat(computedStyle.getPropertyValue('bottom'));
     let height = parseFloat(computedStyle.getPropertyValue('height'));
-    console.log(height);
     // 创建动画效果
     let animation = main.value.animate(
         [
@@ -41,7 +80,7 @@ const exit = () => {
         {
             duration: 400, // 动画持续时间，单位毫秒
             easing: 'ease', // 缓动函数
-            fill: 'forwards' // 动画结束后保持最后一个状态
+            //fill: 'forwards' // 动画结束后保持最后一个状态
         }
     );
     main.value.classList.remove("animate-[timing_0.4s]")
@@ -55,7 +94,7 @@ const exit = () => {
         {
             duration: 400, // 动画持续时间，单位毫秒
             easing: 'ease', // 缓动函数
-            fill: 'forwards' // 动画结束后保持最后一个状态
+            //fill: 'forwards' // 动画结束后保持最后一个状态
         }
     );
     mask.value.classList.remove("animate-[mask_0.4s]")
@@ -72,10 +111,13 @@ const exit = () => {
 //设置时间
 const setTiming = (time) => {
     if (typeof time === 'number') {
-        selectedTime.value = time
-        window.localStorage.setItem("selectedTime", time);
+        selectedTime.value = time * 60
+        selected.value = time
+        window.localStorage.setItem("selectedTime", time * 60);
+        window.localStorage.setItem("selected", time);
         window.localStorage.setItem("customized", false);
         customized.value = false;
+        titleComputed()
         return
     }
     // 获取容器滚动的距离
@@ -90,26 +132,30 @@ const setTiming = (time) => {
     //计算总时间分钟结尾
     time = (parseInt(currentElement.innerText) * 60) + parseInt(currentElement1.innerText)
     if (time == 0) {
-        window.localStorage.removeItem("selectedTime");
-        window.localStorage.setItem("customized", false);
-        customized.value = false;
+        cancel()
         flag.value = false;
-        selectedTime.value = 0;
         return;
     }
     flag.value = false;
-    selectedTime.value = time;
-    window.localStorage.setItem("selectedTime", time);
+    selectedTime.value = time * 60;
+    selected.value = 0;
+    window.localStorage.setItem("selectedTime", time * 60);
+    window.localStorage.removeItem("selected");
     window.localStorage.setItem("customized", true);
     customized.value = true;
+    titleComputed()
+
 }
 
 //取消定时
 const cancel = () => {
     window.localStorage.removeItem("selectedTime");
+    window.localStorage.removeItem("selected");
     window.localStorage.setItem("customized", false);
     customized.value = false;
     selectedTime.value = 0;
+    selected.value = 0;
+    titleComputed()
 }
 
 //滚动回调添加震动
@@ -145,8 +191,22 @@ onMounted(() => {
     if (minute.value) {
         minute.value.addEventListener("scroll", handleScroll);
     }
+    //关闭网页回调，清除定时
+    window.addEventListener('beforeunload', function (e) {
+        window.localStorage.removeItem("selectedTime");
+        window.localStorage.removeItem("selected");
+        window.localStorage.setItem("customized", false);
+        e.returnValue = '';
+    });
+    titleComputed()
 });
 
+onActivated(()=>{
+    //再次进入回调
+    console.log(1);
+    main.value.classList.add("animate-[timing_0.4s]")
+    mask.value.classList.add("animate-[mask_0.4s]")
+})
 </script>
 
 <template>
@@ -156,15 +216,16 @@ onMounted(() => {
             {{ flag ? "自定义关闭" : "定时关闭" }}
         </h5>
         <div v-show="!flag" class="px-3 py-5 m-1 text-center bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-            <h6 :class="title!='选择时间'?'text-indigo-600':''">{{ title }}</h6>
+            <h6 :class="title != '选择时间' ? 'text-indigo-600' : ''">{{ title }}</h6>
             <div class="py-3 flex justify-around">
-                <div :class="[selectedTime == time ? 'bg-indigo-600 text-white' : '']"
+                <div :class="[selected == time ? 'bg-indigo-600 text-white' : '']"
                     class="inline p-1 rounded-full shadow-md active:text-white active:bg-indigo-600" v-for="time in times"
                     :key="time" @click="setTiming(time)">
                     <p class="w-10 h-10 leading-10">{{ time }}</p>
                 </div>
             </div>
-            <div :class="customized?'text-indigo-600':''" class="py-2 my-3 shadow-md rounded-lg text-gray-400 active:text-white active:bg-indigo-600 dark:bg-gray-700"
+            <div :class="customized ? 'text-indigo-600' : ''"
+                class="py-2 my-3 shadow-md rounded-lg text-gray-400 active:text-white active:bg-indigo-600 dark:bg-gray-700"
                 @click="flag = true">
                 自定义
             </div>

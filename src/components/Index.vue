@@ -33,7 +33,6 @@ const openSide = () => {
 
 //组件退出
 const exit = (msg) => {
-    console.log(msg);
     if (msg == "openTiming") {
         currentView.value = Timing
     }else{
@@ -165,7 +164,9 @@ const openAnimate = (e, fn) => {
         </div>
     </div>
     <!-- <Side></Side> -->
-    <component @exit="exit" :is="currentView" v-if="compFlag" />
+    <KeepAlive include="Timing">
+        <component @exit="exit" :is="currentView" v-if="compFlag" />
+    </KeepAlive>
 </template>
 
 <style scoped></style>
