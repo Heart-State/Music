@@ -1,5 +1,5 @@
 import axios from 'axios'
-axios.defaults.baseURL = `http://192.168.86.18:8080/`
+axios.defaults.baseURL = `https://music-api-liart-kappa.vercel.app`
 // axios.defaults.baseURL = `http://192.168.42.33:8080/`
 // axios.defaults.baseURL = `http://192.168.10.21:8080/`
 // axios.defaults.baseURL = `api/`

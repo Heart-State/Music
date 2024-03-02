@@ -1,25 +1,38 @@
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useEventListener } from '../assets/js/event'
+// import { draw } from '../assets/js/WebGLBg'
+import ColorThief from '../../node_modules/colorthief/dist/color-thief.mjs'
 
-const header = ref()
-const cover = ref()
+const colorThief = new ColorThief();
+//dom
+const header = ref(null)
+const cover = ref(null)
+const bg = ref(null)
+const imageElement = ref(null)
+let rgb 
 
 
 useEventListener(document, "scroll", (e) => {
     let scrollTop = document.documentElement.scrollTop
     let range = cover.value.offsetHeight
-    header.value.style.backgroundColor = 'rgba(146, 164, 186,' + scrollTop / range + ')'
+    if (scrollTop <= range) {
+        header.value.style.backgroundColor = 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',' + scrollTop / range + ')'
+    } else {
+        header.value.style.backgroundColor = 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',1)'
+    }
+})
+
+onMounted(() => {
+    rgb = colorThief.getColor(imageElement.value)
+    bg.value.style.backgroundColor = 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',1)'
 })
 </script>
 
 <template>
-    <div class="fixed z-0 w-screen h-screen bg-slate-400 dark:brightness-75">
-
-    </div>
+    <div ref="bg" class="fixed z-0 w-screen h-screen dark:brightness-75"></div>
     <div class="dark:text-white flex flex-col  min-h-screen z-10">
-        <div ref="header"
-            class="header p-1 flex justify-between sticky top-0 z-50 bg-slate-400 dark:brightness-75">
+        <div ref="header" class="header p-1 flex justify-between sticky top-0 z-50 dark:brightness-75">
             <div class="flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="w-10 h-10 p-1 rounded-full active:bg-gray-200 dark:active:bg-gray-800"
@@ -30,7 +43,8 @@ useEventListener(document, "scroll", (e) => {
             </div>
             <div class="flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="w-10 h-10 p-1.5 rounded-full active:bg-gray-200 dark:active:bg-gray-800">
+                    stroke="currentColor"
+                    class="w-10 h-10 p-1.5 rounded-full active:bg-gray-200 dark:active:bg-gray-800">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                 </svg>
@@ -42,8 +56,8 @@ useEventListener(document, "scroll", (e) => {
             </div>
         </div>
         <div ref="cover" class="py-10 z-10 text-center">
-            <img class="w-28 h-28 object-cover rounded-lg m-auto bg-blue-300" src="../../public/img/aq-1.0.0.png"
-                alt="cover">
+            <img ref="imageElement" class="w-28 h-28 object-cover rounded-lg m-auto bg-blue-300"
+                src="http://p2.music.126.net/Cl0-NpZ0ESTDjJ1HmZ33KA==/109951163460576279.jpg" alt="cover" crossorigin="anonymous">
             <h5>koto</h5>
             <p class="text-xs text-gray-500">Redamancy</p>
         </div>
@@ -52,7 +66,8 @@ useEventListener(document, "scroll", (e) => {
                 <div class="flex">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="w-6 h-6 text-indigo-500">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M15.91 11.672a.375.375 0 0 1 0 .656l-5.603 3.113a.375.375 0 0 1-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112Z" />
                     </svg>

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, shallowRef, reactive } from 'vue'
+import { ref, shallowRef, reactive, onMounted } from 'vue'
 import PlayBar from './PlayBar.vue'
 import Card from './Card.vue'
 import MusicLibrary from './MusicLibrary.vue'
@@ -8,6 +8,7 @@ import Message from '../assets/js/message'
 import PlayListCard from './PlayListCard.vue'
 import Timing from './Timing.vue'
 import { useRouter } from 'vue-router'
+import axios from '../axios/axios'
 
 //动态组件绑定值
 const currentView = shallowRef()
@@ -16,6 +17,8 @@ const msg = ref({})
 //动态组件渲染标志 
 const compFlag = ref(false)
 const router = useRouter()
+//推荐歌单
+const personalized = ref()
 
 const listInfo = reactive({
     title: '我喜欢的音乐',
@@ -43,13 +46,13 @@ const exit = (msg) => {
 }
 
 //打开歌单
-const openList = (e) => {
+const openList = (e,item) => {
     //动画
     openAnimate(e.currentTarget, () => {
         router.push({
             path: '/play/list',
             query: {
-                id: 1321312
+                id: item.id
             }
         })
     })
@@ -81,6 +84,20 @@ const openAnimate = (e, fn) => {
     })
 }
 
+//获取推荐歌单
+const getPersonalized = async()=>{
+    const {data:res} = await axios.get('/personalized?limit=10');
+    console.log(res);
+    if (res.code!=200) {
+        Message({ message: "获取失败" })
+    }else{
+        personalized.value = res.result
+    }
+}
+
+onMounted(()=>{
+    getPersonalized()
+})
 </script>
 
 <template>
@@ -113,7 +130,7 @@ const openAnimate = (e, fn) => {
             <div class="pt-2">
                 <h1 class="text-lg font-bold pl-2">推荐歌单</h1>
                 <div class="flex overflow-x-auto">
-                    <Card v-for="i in 10" :key="i" @click="openList($event)"></Card>
+                    <Card v-for="item in personalized" :key="item" @click="openList($event,item)" v-bind="item"></Card>
                 </div>
             </div>
             <div class="pt-2">
