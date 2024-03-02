@@ -62,7 +62,7 @@ const titleComputed = () => {
 }
 
 //关闭音乐
-const pause = ()=>{
+const pause = () => {
     console.log("音乐已关闭");
 }
 
@@ -185,12 +185,7 @@ const handleScroll = (event) => {
 }
 
 onMounted(() => {
-    if (hour.value) {
-        hour.value.addEventListener("scroll", handleScroll);
-    }
-    if (minute.value) {
-        minute.value.addEventListener("scroll", handleScroll);
-    }
+
     //关闭网页回调，清除定时
     window.addEventListener('beforeunload', function (e) {
         window.localStorage.removeItem("selectedTime");
@@ -201,9 +196,14 @@ onMounted(() => {
     titleComputed()
 });
 
-onActivated(()=>{
+onActivated(() => {
     //再次进入回调
-    console.log(1);
+    if (hour.value) {
+        hour.value.addEventListener("scroll", handleScroll);
+    }
+    if (minute.value) {
+        minute.value.addEventListener("scroll", handleScroll);
+    }
     main.value.classList.add("animate-[timing_0.4s]")
     mask.value.classList.add("animate-[mask_0.4s]")
 })
@@ -219,8 +219,8 @@ onActivated(()=>{
             <h6 :class="title != '选择时间' ? 'text-indigo-600' : ''">{{ title }}</h6>
             <div class="py-3 flex justify-around">
                 <div :class="[selected == time ? 'bg-indigo-600 text-white' : '']"
-                    class="inline p-1 rounded-full shadow-md active:text-white active:bg-indigo-600" v-for="time in times"
-                    :key="time" @click="setTiming(time)">
+                    class="inline p-1 rounded-full shadow-md active:text-white active:bg-indigo-600"
+                    v-for="time in times" :key="time" @click="setTiming(time)">
                     <p class="w-10 h-10 leading-10">{{ time }}</p>
                 </div>
             </div>
@@ -261,7 +261,8 @@ onActivated(()=>{
                             @click="flag = false">
                             取消
                         </div>
-                        <div @click="setTiming" class="py-2 ml-1 my-3 shadow-md rounded-lg text-white bg-indigo-600 flex-1">
+                        <div @click="setTiming"
+                            class="py-2 ml-1 my-3 shadow-md rounded-lg text-white bg-indigo-600 flex-1">
                             确定
                         </div>
                     </div>
