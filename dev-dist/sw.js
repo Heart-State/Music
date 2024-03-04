@@ -82,13 +82,13 @@ define(['./workbox-8d84a2d1'], (function (workbox) { 'use strict';
     "revision": "3ca0b8505b4bec776b69afdba2768812"
   }, {
     "url": "index.html",
-    "revision": "0.bfed9274uc"
+    "revision": "0.okbo60jrb28"
   }], {});
   workbox.cleanupOutdatedCaches();
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
     allowlist: [/^\/$/]
   }));
-  workbox.registerRoute(/someInterface/i, new workbox.CacheFirst({
+  workbox.registerRoute(/(.*?)/, new workbox.CacheFirst({
     "cacheName": "interface-cache",
     plugins: [new workbox.ExpirationPlugin({
       maxEntries: 10,

@@ -24,8 +24,10 @@ useEventListener(document, "scroll", (e) => {
 })
 
 onMounted(() => {
-    rgb = colorThief.getColor(imageElement.value)
-    bg.value.style.backgroundColor = 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',1)'
+    imageElement.value.onload = () => {
+        rgb = colorThief.getColor(imageElement.value)
+        bg.value.style.backgroundColor = 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',1)'
+    }
 })
 </script>
 

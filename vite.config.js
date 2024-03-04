@@ -29,8 +29,8 @@ export default defineConfig({
       workbox: {
         runtimeCaching: [
           {
-            urlPattern: /(.*?)/, // 接口缓存 此处填你想缓存的接口正则匹配   
-            handler: 'CacheFirst',
+            urlPattern: /^https:\/\/music-api-liart-kappa\.vercel\.app\//, // 接口缓存 此处填你想缓存的接口正则匹配   
+            handler: 'NetworkFirst',//网络优先
             options: {
               cacheName: 'interface-cache',
               expiration: {
