@@ -4,8 +4,8 @@ import { onActivated, onMounted, ref } from 'vue'
 // 定义派发事件
 const emit = defineEmits(['exit'])
 //绑定虚拟Dom
-const main = ref()
-const mask = ref()
+const main = ref(null)
+const mask = ref(null)
 const hour = ref(null)
 const minute = ref(null)
 const textHeight = ref(null)

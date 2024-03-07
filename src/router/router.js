@@ -3,6 +3,7 @@ import Index from '../components/Index.vue'
 import Home from '../components/Home.vue'
 import Side from '../components/Side.vue'
 import PlayList from '../components/PlayList.vue'
+import Login from '../components/Login.vue'
 
 const router = createRouter({
     history: createWebHashHistory(),
@@ -26,6 +27,10 @@ const router = createRouter({
         {
             path: '/play/list',
             component: PlayList
+        },
+        {
+            path: '/login',
+            component: Login
         }
     ]
 })

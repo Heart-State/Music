@@ -29,6 +29,14 @@ export default {
 
             opacity: "0.6"
           }
+        },
+        "playBar": {
+          "0%": {
+            bottom: "-4.25rem"
+          },
+          "100%": {
+            bottom: "0"
+          }
         }
       }
     },

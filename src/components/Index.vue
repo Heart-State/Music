@@ -9,11 +9,13 @@ import PlayListCard from './PlayListCard.vue'
 import Timing from './Timing.vue'
 import { useRouter } from 'vue-router'
 import axios from '../axios/axios'
+import { usePlayStore } from '../states/play'
 
+const play = usePlayStore()
 //动态组件绑定值
 const currentView = shallowRef()
-//传递给子组件的值的容器
-const msg = ref({})
+//playBar展示flag
+const playBarFlag = ref(false)
 //动态组件渲染标志 
 const compFlag = ref(false)
 const router = useRouter()
@@ -38,7 +40,7 @@ const openSide = () => {
 const exit = (msg) => {
     if (msg == "openTiming") {
         currentView.value = Timing
-    }else{
+    } else {
         compFlag.value = false
         currentView.value = null
         document.querySelector('body').classList.remove("overflow-hidden")
@@ -46,7 +48,7 @@ const exit = (msg) => {
 }
 
 //打开歌单
-const openList = (e,item) => {
+const openList = (e, item) => {
     //动画
     openAnimate(e.currentTarget, () => {
         router.push({
@@ -85,18 +87,37 @@ const openAnimate = (e, fn) => {
 }
 
 //获取推荐歌单
-const getPersonalized = async()=>{
-    const {data:res} = await axios.get('/personalized?limit=10');
+const getPersonalized = async () => {
+    const { data: res } = await axios.get('/personalized?limit=10');
     console.log(res);
-    if (res.code!=200) {
+    if (res.code != 200) {
         Message({ message: "获取失败" })
-    }else{
+    } else {
         personalized.value = res.result
     }
 }
 
-onMounted(()=>{
+//判断是否展示playBar并获取歌曲详情
+const decidePlayBar = async () => {
+    let playSong = window.localStorage.getItem('playSong')
+    if (playSong != null) {
+        playSong = playSong.parseJSON()
+        play.id = playSong.id
+        play.cover = playSong.coverImgUrl
+        play.title = playSong.name
+        const {data:res} = await axios.get('/song/url?id='+play.id)
+        play.playLink = res.data[0].url
+        playBarFlag.value = true
+    } else {
+        playBarFlag.value = true
+    }
+}
+
+onMounted(() => {
+    //获取推荐歌单
     getPersonalized()
+    //判断是否展示playBar
+    decidePlayBar()
 })
 </script>
 
@@ -120,8 +141,8 @@ onMounted(()=>{
                                 d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                         </svg>
                     </span>
-                    <input placeholder="搜索" disabled class="outline-none bg-gray-100 dark:bg-gray-800 w-full" type="text"
-                        name="search" />
+                    <input placeholder="搜索" disabled class="outline-none bg-gray-100 dark:bg-gray-800 w-full"
+                        type="text" name="search" />
                 </label>
             </div>
         </div>
@@ -129,8 +150,8 @@ onMounted(()=>{
             <MusicLibrary></MusicLibrary>
             <div class="pt-2">
                 <h1 class="text-lg font-bold pl-2">推荐歌单</h1>
-                <div class="flex overflow-x-auto">
-                    <Card v-for="item in personalized" :key="item" @click="openList($event,item)" v-bind="item"></Card>
+                <div class="flex overflow-x-auto no-scrollbar">
+                    <Card v-for="item in personalized" :key="item" @click="openList($event, item)" v-bind="item"></Card>
                 </div>
             </div>
             <div class="pt-2">
@@ -177,7 +198,7 @@ onMounted(()=>{
         </div>
         <div class="sticky bottom-0 z-10">
             <!-- <TabBar></TabBar> -->
-            <PlayBar></PlayBar>
+            <PlayBar v-if="playBarFlag" class="animate-[playBar_0.4s]"></PlayBar>
         </div>
     </div>
     <!-- <Side></Side> -->

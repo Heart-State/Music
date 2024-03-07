@@ -67,7 +67,7 @@ if (!self.define) {
     });
   };
 }
-define(['./workbox-8d84a2d1'], (function (workbox) { 'use strict';
+define(['./workbox-ffcb8e51'], (function (workbox) { 'use strict';
 
   self.skipWaiting();
   workbox.clientsClaim();
@@ -82,13 +82,13 @@ define(['./workbox-8d84a2d1'], (function (workbox) { 'use strict';
     "revision": "3ca0b8505b4bec776b69afdba2768812"
   }, {
     "url": "index.html",
-    "revision": "0.okbo60jrb28"
+    "revision": "0.365nnk7h4h8"
   }], {});
   workbox.cleanupOutdatedCaches();
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
     allowlist: [/^\/$/]
   }));
-  workbox.registerRoute(/(.*?)/, new workbox.CacheFirst({
+  workbox.registerRoute(/^https:\/\/music-api-liart-kappa\.vercel\.app\//, new workbox.NetworkFirst({
     "cacheName": "interface-cache",
     plugins: [new workbox.ExpirationPlugin({
       maxEntries: 10,
