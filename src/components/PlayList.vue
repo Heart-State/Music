@@ -1,18 +1,26 @@
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useEventListener } from '../assets/js/event'
-// import { draw } from '../assets/js/WebGLBg'
 import ColorThief from '../../node_modules/colorthief/dist/color-thief.mjs'
+import { useRoute } from 'vue-router';
+import axios from '../axios/axios';
 
+const route = useRoute()
 const colorThief = new ColorThief();
 //dom
 const header = ref(null)
 const cover = ref(null)
 const bg = ref(null)
 const imageElement = ref(null)
-let rgb 
+let rgb
 
 
+//获取歌曲
+const getList = async () => {
+    const { data: res } = await axios.get('')
+}
+
+//监听滚动改变顶部背景颜色
 useEventListener(document, "scroll", (e) => {
     let scrollTop = document.documentElement.scrollTop
     let range = cover.value.offsetHeight
@@ -59,7 +67,8 @@ onMounted(() => {
         </div>
         <div ref="cover" class="py-10 z-10 text-center">
             <img ref="imageElement" class="w-28 h-28 object-cover rounded-lg m-auto bg-blue-300"
-                src="http://p2.music.126.net/Cl0-NpZ0ESTDjJ1HmZ33KA==/109951163460576279.jpg" alt="cover" crossorigin="anonymous">
+                src="http://p2.music.126.net/Cl0-NpZ0ESTDjJ1HmZ33KA==/109951163460576279.jpg" alt="cover"
+                crossorigin="anonymous">
             <h5>koto</h5>
             <p class="text-xs text-gray-500">Redamancy</p>
         </div>
