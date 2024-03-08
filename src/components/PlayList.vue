@@ -46,7 +46,7 @@ onMounted(() => {
             <div class="flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="w-10 h-10 p-1 rounded-full active:bg-gray-200 dark:active:bg-gray-800"
-                    @click="$router.back(-1)">
+                    @click="$router.back()">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
                 </svg>
                 <h6 class="pl-1">歌单</h6>
